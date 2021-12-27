@@ -5,24 +5,18 @@ const { google } = require('googleapis');
 const readline = require('readline');
 var admin = require("firebase-admin");
 var serviceAccount = require("./../resources/serviceAccountKey");
-
 const path=require('path');
-
 require('dotenv').config();
 
 
-
-
-// admin.initializeApp({
-//     credential: admin.credential.cert(serviceAccount),
-//     databaseURL:"https://upload-86ef7.firebaseio.com",
-//     storageBucket: process.env.BUCKET_URL
-// });
+admin.initializeApp({
+    credential: admin.credential.cert(serviceAccount),
+    databaseURL:"https://upload-86ef7.firebaseio.com",
+    storageBucket: process.env.BUCKET_URL
+});
 
 
 exports.upload =  async (req, res, next) => {
-
-let client = null ;
 
     try {
 
@@ -45,7 +39,7 @@ let client = null ;
 };
 
 
-async function authorize(credentials,req,admin) {
+function authorize(credentials,req,admin) {
 
     const TOKEN_PATH = './api/resources/token.json';
     const {client_secret, client_id, redirect_uris} = credentials.web;
@@ -92,8 +86,12 @@ function getAccessToken(oAuth2Client) {
 
 async function upload_manager(auth,req)
 {
-    var ConsultantfolderName = "Consultant "+req.body.cname;
-    var UserfolderName = req.body.uname;
+    let ConsultantfolderName = "Consultant "+req.body.cname;
+    let UserfolderName = req.body.uname;
+     ConsultantfolderName = ConsultantfolderName.replace(/\s/g, '_');
+     UserfolderName = UserfolderName.replace(/\s/g, '_');
+
+
     let fileName = Date.now()+"-"+req.file.originalname;
     // Authenticating Drive API
     const drive = google.drive({version: 'v3', auth:auth});
@@ -138,13 +136,13 @@ async function upload_manager(auth,req)
     }
 
 
-
+    fs.unlinkSync(req.file.path);
 
 }
 
 async function checkFolderExists(folderName,drive)
 {
-    var query = "name='"+folderName+"' and mimeType='application/vnd.google-apps.folder' and trashed=false ";
+    var query = " mimeType='application/vnd.google-apps.folder' and name='"+folderName+"'  and trashed=false ";
 
     const fileExistance =  await new Promise((rest,rej)=>{
         drive.files.list({
