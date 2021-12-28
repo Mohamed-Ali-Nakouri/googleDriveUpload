@@ -6,12 +6,11 @@ const readline = require('readline');
 var admin = require("firebase-admin");
 var serviceAccount = require("./../resources/serviceAccountKey");
 const path=require('path');
-require('dotenv').config();
+require('dotenv').config({path: './api/.env'});
 
 
 admin.initializeApp({
     credential: admin.credential.cert(serviceAccount),
-    databaseURL:"https://upload-86ef7.firebaseio.com",
     storageBucket: process.env.BUCKET_URL
 });
 
@@ -98,7 +97,7 @@ async function upload_manager(auth,req)
     //Check the existance of the forlder before saving into google drive
     var check = await  checkFolderExists(ConsultantfolderName,drive);
     // Initialize the bucket on Firestore
-    let bucket = admin.storage().bucket("upload-86ef7.appspot.com");
+    let bucket = admin.storage().bucket();
     //Performing the upload operation in the correspondant path
     await bucket.file(ConsultantfolderName+"/"+UserfolderName+"/"+fileName).createWriteStream().end(req.file.buffer);
 
