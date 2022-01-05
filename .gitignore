@@ -1,6 +1,6 @@
 node_modules
-/api/.env
+#/api/.env
 /api/resources/uploads
-/api/resources/credentials.json
-/api/resources/serviceAccountKey.json
-/api/resources/token.json
+#/api/resources/credentials.json
+#/api/resources/serviceAccountKey.json
+#/api/resources/token.json
